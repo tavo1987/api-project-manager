@@ -1,4 +1,4 @@
-module github.coom/tavo1987/api-project-manager
+module github.com/tavo1987/api-project-manager
 
 go 1.15
 
