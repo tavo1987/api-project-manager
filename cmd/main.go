@@ -1,13 +1,14 @@
 package main
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.coom/tavo1987/api-project-manager/api/handlers/organizations"
+)
 
 func main() {
 	app := fiber.New()
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, my friends!")
-	})
+	app.Post("/organization/store", organizations.Create)
 
 	app.Listen(":3000")
 }
