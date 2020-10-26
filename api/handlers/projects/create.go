@@ -1,4 +1,4 @@
-package organizations
+package projects
 
 import (
 	"fmt"
@@ -11,19 +11,21 @@ import (
 	"github.com/google/uuid"
 )
 
-// Organization is a type to create an organization
-type Organization struct {
-	OrgID uuid.UUID `json:"orgId"`
-	PK    string    `json:"PK"`
-	SK    string    `json:"SK"`
-	Name  string    `json:"name" validate:"required,min=3,max=32"`
-	Tier  string    `json:"tier" validate:"required"`
+// Project is a type to create an project
+type Project struct {
+	ProjID string `json:"projId"`
+	PK     string `json:"PK"`
+	SK     string `json:"SK"`
+	OrgID  string `json:"orgId"`
+	Name   string `json:"name" validate:"required,min=3,max=32"`
+	Type   string `json:"type" validate:"required"`
+	Status string `json:"status" validate:"required"`
 }
 
 // Create this is a handler to create a new organization
 func Create(c *fiber.Ctx) error {
-	org := new(Organization)
-	if err := c.BodyParser(org); err != nil {
+	proj := new(Project)
+	if err := c.BodyParser(proj); err != nil {
 		c.JSON("something went wrong")
 		return err
 	}
@@ -36,10 +38,10 @@ func Create(c *fiber.Ctx) error {
 
 	dynamoSvc := dynamodb.New(sess, aws.NewConfig().WithLogLevel(aws.LogDebugWithHTTPBody))
 
-	org.OrgID = uuid.New()
-	org.PK = "ORG#" + org.OrgID.String()
-	org.SK = "#METADATA#" + org.OrgID.String()
-	av, err := dynamodbattribute.MarshalMap(org)
+	proj.ProjID = uuid.New().String()
+	proj.PK = "ORG#" + proj.OrgID
+	proj.SK = "PROJ#" + proj.Type + "#" + proj.ProjID
+	av, err := dynamodbattribute.MarshalMap(proj)
 	input := &dynamodb.PutItemInput{
 		Item:      av,
 		TableName: aws.String("project-manager"),
@@ -53,5 +55,5 @@ func Create(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.JSON(org)
+	return c.JSON(proj)
 }
